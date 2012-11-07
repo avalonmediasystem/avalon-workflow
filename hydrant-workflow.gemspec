@@ -1,6 +1,6 @@
-require File.expand_path('lib/hydrant-workflow/version', __FILE__)
+require File.expand_path('../lib/hydrant/version', __FILE__)
 
-Gem::Specifications.new do |gem|
+Gem::Specification.new do |gem|
 	gem.authors = ["rogersna"]
 	gem.email = ["rogersna@indiana.edu"]
 	gem.description = %q{Workflow processing for Hydrant based applications}
