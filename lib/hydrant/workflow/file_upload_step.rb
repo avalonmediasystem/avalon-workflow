@@ -13,7 +13,7 @@ module Hydrant
 		   context
 		end
 
-		def after_step
+		def after_step context
 		end
 
 		def execute context
@@ -28,5 +28,6 @@ module Hydrant
 
 		   context
 		end
+	end
 	end
 end
