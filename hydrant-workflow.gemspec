@@ -1,4 +1,4 @@
-require File.expand_path('../lib/hydrant/version', __FILE__)
+require File.expand_path('../lib/hydrant-workflow/version', __FILE__)
 
 Gem::Specification.new do |gem|
 	gem.authors = ["rogersna"]
@@ -12,5 +12,5 @@ Gem::Specification.new do |gem|
 	gem.test_files = gem.files.grep(%r{^(test|spec|features)/})
 	gem.name = 'hydrant-workflow'
 	gem.require_paths = ["lib", "app"]
-	gem.version = Hydrant::Workflow::VERSION
+	gem.version = HydrantWorkflow::VERSION
 end

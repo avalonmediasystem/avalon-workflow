@@ -7,8 +7,7 @@
 # Workflow state is designed to be chained so that multiple operations can be
 # performed in sequence. Make sure that your own steps return the modified
 # application context for use by methods down the line
-module Hydrant
-   module Workflow
+module Hydrant::Workflow::Steps
       class BasicStep
 	 # before_step will execute to set the context for an operation.
 	 # If you need to load options for forms, verify MD5 checksums, or
@@ -41,5 +40,4 @@ module Hydrant
 	    context
 	 end
       end
-   end
 end

@@ -1,5 +1,5 @@
-module Hydrant
-	module Workflow
-		autoload :Steps, 'hydrant/workflow/workflow.rb'
-	end
+require 'hydrant/workflow'
+
+module HydrantWorkflow
+#	autoload :Workflow
 end
