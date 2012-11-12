@@ -1,15 +1,22 @@
-require 'hydrant/workflow/steps/file_upload_step'
+require 'hydrant/workflow/steps'
 
 module Hydrant::Workflow::WorkflowControllerBehavior
 
   def create_workflow_step(name, *args)
-    #name = name.underscore.camelize
     step = nil
 
     case name
-    when 'file_upload'
-      step = Hydrant::Workflow::Steps::FileUploadStep.new
-    end
+      when 'file_upload'
+        step = Hydrant::Workflow::Steps::FileUploadStep.new
+      when 'resource-description'
+	step = Hydrant::Workflow::Steps::ResourceDescription.new
+      when 'structure'
+	step = Hydrant::Workflow::Steps::StructureStep.new
+      when 'access-control'
+	step = Hydrant::Workflow::Steps::AccessControlStep.new
+      when 'preview'
+	step = Hydrant::Workflow::Steps::PreviewStep.new
+      end
 
     step
   end
