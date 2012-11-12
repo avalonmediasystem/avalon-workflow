@@ -13,7 +13,7 @@ module Hydrant::Workflow::WorkflowControllerBehavior
       when 'file_upload'
         step = Hydrant::Workflow::Steps::FileUploadStep.new
       when 'resource-description'
-	step = Hydrant::Workflow::Steps::ResourceDescription.new
+	step = Hydrant::Workflow::Steps::ResourceDescriptionStep.new
       when 'structure'
 	step = Hydrant::Workflow::Steps::StructureStep.new
       when 'access-control'
