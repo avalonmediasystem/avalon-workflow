@@ -1,5 +1,5 @@
 require 'hydrant/workflow/steps/file_upload_step'
-require 'hydrant/workflow/steps/resouce_description_step'
+require 'hydrant/workflow/steps/resource_description_step'
 require 'hydrant/workflow/steps/structure_step'
 require 'hydrant/workflow/steps/access_control_step'
 require 'hydrant/workflow/steps/preview_step'
