@@ -2,32 +2,32 @@ require 'hydrant/dropbox'
 require 'hydrant/workflow/steps/basic_step'
 
 module Hydrant::Workflow::Steps
-	class FileUploadStep < BasicStep
-		# For file uploads the process of setting the context is easy. We
-		# just need to ask the dropbox if there are any files. If so load
-		# them into a variable that can be referred to later
-		def before_step context
-	       dropbox_files = Hydrant::DropboxService.all
-		   context[:dropbox_files] = @dropbox_files 
-		   context
-		end
+  class FileUploadStep < BasicStep
+    # For file uploads the process of setting the context is easy. We
+    # just need to ask the dropbox if there are any files. If so load
+    # them into a variable that can be referred to later
+    def before_step context
+       dropbox_files = Hydrant::DropboxService.all
+       context[:dropbox_files] = dropbox_files 
+       context
+    end
 
-		def after_step context
-		   context
-		end
+    def after_step context
+       context
+    end
 
-		def execute context
-	       logger.debug "<< Processing FILE-UPLOAD step >>"
-		   update_master_files context[:mediaobject], context[:parts] 
-		   unless context[:mediaobject].parts.empty?
-		       media = context[:mediaobject]
-			   media.format = media.parts.first.media_type
-			   media.save(validate: false)
-			   context[:mediaobject] = media
-		   end
+    def execute context
+         logger.debug "<< Processing FILE-UPLOAD step >>"
+       update_master_files context[:mediaobject], context[:parts] 
+       unless context[:mediaobject].parts.empty?
+           media = context[:mediaobject]
+         media.format = media.parts.first.media_type
+         media.save(validate: false)
+         context[:mediaobject] = media
+       end
 
-		   context
-		end
+       context
+    end
 
   # Passing in an ordered array of values update the master files below a
   # MediaObject. Accepted hash keys are
@@ -57,5 +57,5 @@ module Hydrant::Workflow::Steps
         end
   end
 
-	end
+  end
 end
