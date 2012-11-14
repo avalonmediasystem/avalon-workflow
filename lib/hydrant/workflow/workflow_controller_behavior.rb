@@ -34,26 +34,19 @@ module Hydrant::Workflow::WorkflowControllerBehavior
     logger.debug "<< UPDATE_INGEST_STATUS >>"
     logger.debug "<< Updating current ingest step >>"
     
-    if @ingest_status.nil?
-      @ingest_status = IngestStatus.find_or_create(pid: pid)
-    else
-      active_step = active_step || @ingest_status.current_step
-      logger.debug "<< COMPLETED : #{@ingest_status.completed?(active_step)} >>"
+      active_step = active_step || @mediaobject.workflow.last_completed_step
+      logger.debug "<< COMPLETED : #{@mediaobject.workflow.completed?(active_step)} >>"
       
-      if HYDRANT_STEPS.last? active_step and @ingest_status.completed? active_step
-        @ingest_status.publish
+      if HYDRANT_STEPS.last? active_step and @mediaobject.workflow.completed? active_step
+        @mediaobject.workflow.publish
       end
-      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
+      logger.debug "<< PUBLISHED : #{@mediaobject.workflow.published?} >>"
 
-      if @ingest_status.current?(active_step) and not @ingest_status.published
+      if @mediaobject.workflow.current?(active_step) and not @mediaobject.workflow.published?
         logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
-        @ingest_status.current_step = @ingest_status.advance
+        @mediaobject.workflow.last_completed_step = @mediaobject.workflow.advance
       end
-    end
-
-    @ingest_status.save
-    @ingest_status
   end
 
 end
