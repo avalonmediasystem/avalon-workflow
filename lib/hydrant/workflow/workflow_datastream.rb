@@ -134,16 +134,16 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
   def to_solr(solr_doc=SolrDocument.new)
     super(solr_doc)
 
-    case last_completed_step.first
-    when ''
-      solr_doc.merge!(:workflow_status_facet => "New")
+    solr_value = case last_completed_step.first
+    when blank?
+      'New'
     when 'preview'
-      solr_doc.merge!(:workflow_status_facet => "Completed")
-    default
-      solr_doc.merge!(:workflow_status_facet => "In progress")
+      'Completed'
+    else
+      'In progress'
     end
+    solr_doc.merge!(workflow_status_facet: solr_value)
     solr_doc.merge!(:workflow_published_facet => published.first.capitalize)
-    solr_doc.merge!(:workflow_source_facet => origin.first.capitalize)
   end
 
       protected
