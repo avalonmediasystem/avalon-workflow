@@ -7,8 +7,17 @@
 # Workflow state is designed to be chained so that multiple operations can be
 # performed in sequence. Make sure that your own steps return the modified
 # application context for use by methods down the line
-module Hydrant::Workflow::Steps
+module Hydrant::Workflow
       class BasicStep
+         attr_accessor :step, :title, :summary, :template
+  
+         def initialize(step = nil, title = nil, summary = nil, template = nil)
+           self.step = step
+           self.title = title
+           self.summary = summary
+           self.template = template
+         end
+
 	 # before_step will execute to set the context for an operation.
 	 # If you need to load options for forms, verify MD5 checksums, or
 	 # other similar functions this is the place to perform those
