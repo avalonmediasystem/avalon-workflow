@@ -86,7 +86,7 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
 
 	if (lcs.blank? or not HYDRANT_STEPS.exists?(lcs))
 	  self.last_completed_step = HYDRANT_STEPS.first.step
-	elsif (unless HYDRANT_STEPS.last?(lcs))
+	elsif (not HYDRANT_STEPS.last?(lcs))
 	  next_step = HYDRANT_STEPS.next(lcs).step
 	  logger.debug "<< Advancing to the next step - #{next_step} >>"
           self.last_completed_step = next_step 
@@ -113,7 +113,7 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
       if current?(active_step) and not published?
         logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
-        last_completed_step = advance
+        advance
       end
   end
 
