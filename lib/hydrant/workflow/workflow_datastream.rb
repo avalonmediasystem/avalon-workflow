@@ -1,4 +1,6 @@
 class WorkflowDatastream < ActiveFedora::NokogiriDatastream
+  include ActiveRecord::Validations
+
   before_save :reset_values
 
   set_terminology do |t|
@@ -11,30 +13,6 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
 
   def published?
     published.eql? 'published'
-  end
-
-  def published= publication_status
-     published = publication_status ? 'published' : 'unpublished'
-  end
-
-  def last_completed_step= active_step
-    active_step = active_step.first if active_step.is_a? Array
-    unless HYDRANT_STEPS.exists? active_step
-      logger.warn "Unrecognized step : #{active_step}"
-    end
-    
-    # Set it anyways for now. Need to come up with a more robust warning
-    # system down the road
-    last_completed_step = [active_step]
-  end 
-  
-  def origin= source
-    unless ['batch', 'web', 'console'].include? source
-      logger.warn "Unrecognized origin : #{source}"
-      origin = 'unknown'
-    else
-      origin = source
-    end
   end
 
       # Return true if the step is current or prior to the parameter passed in
