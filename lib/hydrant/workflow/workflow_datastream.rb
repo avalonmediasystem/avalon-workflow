@@ -14,7 +14,8 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
   end
 
   def published= publication_status
-     published = publication_status ? 'published' : 'unpublished'
+     publishedVal = publication_status ? 'published' : 'unpublished'
+     update_values({[{:published=>"0"}]=>{"0"=>publishedVal}})
   end
 
   def last_completed_step= active_step
@@ -25,15 +26,15 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
     
     # Set it anyways for now. Need to come up with a more robust warning
     # system down the road
-    last_completed_step = [active_step]
+    update_values({[{:last_completed_step=>"0"}]=>{"0"=>active_step}})
   end 
   
   def origin= source
     unless ['batch', 'web', 'console'].include? source
       logger.warn "Unrecognized origin : #{source}"
-      origin = 'unknown'
+      update_values({[{:origin=>"0"}]=>{"0"=>"unknown"}})
     else
-      origin = source
+      update_values({[{:origin=>"0"}]=>{"0"=>source}})
     end
   end
 
@@ -77,7 +78,11 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
       end
 
       def advance
-        last_completed_step = HYDRANT_STEPS.next(last_completed_step.first).step
+	if(last_completed_step.first.eql? "")
+	  last_completed_step = HYDRANT_STEPS.first.step
+        else
+          last_completed_step = HYDRANT_STEPS.next(last_completed_step.first).step
+        end
       end
 
       def publish
@@ -146,7 +151,5 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
           last_completed_step = HYDRANT_STEPS.first.step
         end
       end
-
-
 
 end
