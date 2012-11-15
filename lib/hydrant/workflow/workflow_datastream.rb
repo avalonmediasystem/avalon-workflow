@@ -143,7 +143,9 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
       'In progress'
     end
     solr_doc.merge!(workflow_status_facet: solr_value)
-    solr_doc.merge!(:workflow_published_facet => published.first.capitalize)
+
+    published_value = published? ? 'Published' : 'Unpublished'
+    solr_doc.merge!(:workflow_published_facet => published_value)
   end
 
       protected
