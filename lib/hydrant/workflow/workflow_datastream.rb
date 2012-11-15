@@ -62,11 +62,14 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
       def current?(step_name)
         current = case
                   when HYDRANT_STEPS.first?(step_name)
+			  logger.debug "<< Option 1 >>"
                     last_completed_step.first.empty?
                   when HYDRANT_STEPS.exists?(step_name)
+			  logger.debug "<< Option 2 >>"
                     previous_step = HYDRANT_STEPS.previous(step_name)
-                    (last_completed_step == previous_step.step)
+                    (last_completed_step.first == previous_step.step)
                   else
+			  logger.debug "<< Option 3 >>"
                     false
                   end
 
@@ -100,7 +103,6 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
       
   def update_status(active_step=nil)
     logger.debug "<< UPDATE_INGEST_STATUS >>"
-    logger.debug "<< Updating current ingest step >>"
 
       active_step = active_step || last_completed_step.first
       logger.debug "<< COMPLETED : #{completed?(active_step)} >>"
