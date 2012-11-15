@@ -15,6 +15,31 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
     published.eql? 'published'
   end
 
+  def published= publication_status
+     publishedVal = publication_status ? 'published' : 'unpublished'
+     update_values({[{:published=>"0"}]=>{"0"=>publishedVal}})
+  end
+
+  def last_completed_step= active_step
+    active_step = active_step.first if active_step.is_a? Array
+    unless HYDRANT_STEPS.exists? active_step
+      logger.warn "Unrecognized step : #{active_step}"
+    end
+    
+    # Set it anyways for now. Need to come up with a more robust warning
+    # system down the road
+    update_values({[{:last_completed_step=>"0"}]=>{"0"=>active_step}})
+  end 
+  
+  def origin= source
+    unless ['batch', 'web', 'console'].include? source
+      logger.warn "Unrecognized origin : #{source}"
+      update_values({[{:origin=>"0"}]=>{"0"=>"unknown"}})
+    else
+      update_values({[{:origin=>"0"}]=>{"0"=>source}})
+    end
+  end
+
       # Return true if the step is current or prior to the parameter passed in
       # Defaults to false if the step is not recognized
       def completed?(step_name)
@@ -55,7 +80,11 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
       end
 
       def advance
-        last_completed_step = HYDRANT_STEPS.next(last_completed_step.first).step
+	if(last_completed_step.first.eql? "")
+	  last_completed_step = HYDRANT_STEPS.first.step
+        else
+          last_completed_step = HYDRANT_STEPS.next(last_completed_step.first).step
+        end
       end
 
       def publish
@@ -124,7 +153,5 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
           last_completed_step = HYDRANT_STEPS.first.step
         end
       end
-
-
 
 end
