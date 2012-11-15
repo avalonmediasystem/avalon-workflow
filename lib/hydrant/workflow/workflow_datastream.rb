@@ -1,6 +1,4 @@
 class WorkflowDatastream < ActiveFedora::NokogiriDatastream
-  include ActiveRecord::Validations
-
   before_save :reset_values
 
   set_terminology do |t|
@@ -79,17 +77,25 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
         completed?(step_name) or current?(step_name)
       end
 
+      # Advance should recognize that a step is invalid and respond by 
+      # defaulting to the first known step. If you are already on the last
+      # step then don't advance any further. There's a potential for silently
+      # failing here but this is a first pass only
       def advance
-	if(last_completed_step.first.eql? "")
-	  last_completed_step = HYDRANT_STEPS.first.step
-        else
-          last_completed_step = HYDRANT_STEPS.next(last_completed_step.first).step
+	lcs = (last_completed_step.is_a? Array) ? last_completed_step.first : last_completed_step
+
+	if (lcs.blank? or not HYDRANT_STEPS.exists?(lcs))
+	  self.last_completed_step = HYDRANT_STEPS.first.step
+	elsif (unless HYDRANT_STEPS.last?(lcs))
+	  next_step = HYDRANT_STEPS.next(lcs).step
+	  logger.debug "<< Advancing to the next step - #{next_step} >>"
+          self.last_completed_step = next_step 
         end
       end
 
       def publish
-        last_completed_step = "published"
-        published = true
+        self.last_completed_step = HYDRANT_STEPS.last.step 
+        self.published = true.to_s
       end
       
   def update_status(active_step=nil)
