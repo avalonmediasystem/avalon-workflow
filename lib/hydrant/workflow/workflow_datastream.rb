@@ -10,12 +10,11 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
   end
 
   def published?
-    published.eql? 'published'
+    published.first.eql? true.to_s
   end
 
   def published= publication_status
-     publishedVal = publication_status ? 'published' : 'unpublished'
-     update_values({[{:published=>"0"}]=>{"0"=>publishedVal}})
+     update_values({[{:published=>"0"}]=>{"0"=>publication_status.to_s}})
   end
 
   def last_completed_step= active_step
@@ -107,23 +106,23 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
       active_step = active_step || last_completed_step.first
       logger.debug "<< COMPLETED : #{completed?(active_step)} >>"
 
-      if HYDRANT_STEPS.last? active_step and completed? active_step
-        publish
-      end
-      logger.debug "<< PUBLISHED : #{published?} >>"
-
       if current?(active_step) and not published?
         logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
         advance
       end
+
+      if HYDRANT_STEPS.last? active_step and completed? active_step
+        publish
+      end
+      logger.debug "<< PUBLISHED : #{published?} >>"
   end
 
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
       xml.workflow do
         xml.last_completed_step '' 
-        xml.published 'false'
+        xml.published false.to_s
         xml.origin 'unknown' 
       end
     end
