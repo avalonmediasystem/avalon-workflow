@@ -46,8 +46,6 @@ module Hydrant::Workflow
         offset = get_key_index(step)
         next_step = nil
         
-        puts "<< #{offset} (#{next_step}) >>"
-        
         unless last?(step) or offset.nil?
           offset = offset + 1
           next_step = @_states[@_states_order[offset]]
