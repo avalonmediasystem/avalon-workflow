@@ -53,7 +53,7 @@ module Hydrant::Workflow::WorkflowControllerBehavior
     unless model_object.errors.empty?
       report_errors model_object
     else
-      unless params[:donot_advance] == "true"
+      unless params[:commit] == "Save"
         model_object.workflow.update_status(@active_step)
         model_object.save(validate: false)
 
@@ -78,7 +78,7 @@ module Hydrant::Workflow::WorkflowControllerBehavior
   protected
 
   def get_redirect_path(target, model_object)
-    unless HYDRANT_STEPS.last?(params[:step])
+    unless HYDRANT_STEPS.last?(params[:step]) && @active_step == "published"
       redirect_path = edit_polymorphic_path(model_object, step: target)
     else
       flash[:notice] = "This resource is now available for use in the system"
