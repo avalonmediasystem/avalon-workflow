@@ -45,10 +45,11 @@ module Hydrant::Workflow::WorkflowControllerBehavior
     unless model_object.errors.empty?
       report_errors model_object
     else
-      unless params[:commit] == "save_and_continue"
+      if params[:commit] == "save_and_continue"
         model_object.workflow.update_status(@active_step)
         model_object.save(validate: false)
 
+	# Advance to the next step
         if HYDRANT_STEPS.has_next?(@active_step)
           @active_step = HYDRANT_STEPS.next(@active_step).step
         elsif model_object.workflow.published?
