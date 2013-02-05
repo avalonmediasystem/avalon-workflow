@@ -1,23 +1,26 @@
 module Hydrant::Workflow::WorkflowControllerBehavior
+  extend ActiveSupport::Concern
+
+  included do
+    before_filter :update_active_step, only: [:edit, :update]
+  end
+
+  def update_active_step
+    #FIXME make this follow ||= pattern
+    @active_step = params[:step] || model_object.workflow.last_completed_step.first
+    @active_step = HYDRANT_STEPS.first.step if @active_step.blank?
+  end
 
   def inject_workflow_steps
     @workflow_steps = HYDRANT_STEPS
   end
 
   def edit
-    model_object = self.instance_variable_set("@#{controller_name.classify.downcase}", ActiveFedora::Base.find(params[:id], cast: true))
-
-    @active_step = params[:step] || model_object.workflow.last_completed_step.first
-    @active_step = HYDRANT_STEPS.first.step if @active_step.blank?
-    prev_step = HYDRANT_STEPS.previous(@active_step)
-    context = params.merge!({controller_name.classify.downcase.to_sym => model_object})
-    context = HYDRANT_STEPS.get_step(@active_step).before_step context
-
-    #copy everything out of context and into instance variables
-    context.each {|k,v| self.instance_variable_set("@#{k}", v)}
+    context = perform_step_action :before_step
 
     custom_edit #yield to custom_edit in the controller
 
+    prev_step = HYDRANT_STEPS.previous(@active_step)
     unless prev_step.nil? || model_object.workflow.completed?(prev_step.step)
       redirect_to edit_polymorphic_path(model_object)
       return
@@ -28,17 +31,7 @@ module Hydrant::Workflow::WorkflowControllerBehavior
   end
 
   def update
-
-    model_object = self.instance_variable_set("@#{controller_name.classify.downcase}", ActiveFedora::Base.find(params[:id], cast: true))
-
-    @active_step = params[:step] || model_object.workflow.last_completed_step.first
-    @active_step = HYDRANT_STEPS.first.step if @active_step.blank?
-    prev_step = HYDRANT_STEPS.previous(@active_step)
-    context = params.merge!({controller_name.classify.downcase.to_sym => model_object, user: user_key})
-    context = HYDRANT_STEPS.get_step(@active_step).execute context
-
-    #copy everything out of context and into instance variables
-    context.each {|k,v| self.instance_variable_set("@#{k}", v)}
+    context = perform_step_action :execute
 
     custom_update #yield to custom_update in the controller
 
@@ -66,20 +59,43 @@ module Hydrant::Workflow::WorkflowControllerBehavior
   def custom_update
   end
 
+  def model_object
+    @model_object ||= ActiveFedora::Base.find(params[:id], cast: true)
+  end
+
+  def build_context
+    params.merge!({model_variable_name.to_sym => model_object, user: user_key})
+  end
+
+  def model_variable_name
+    controller_name.classify.downcase
+  end
+
+  def perform_step_action action
+    context = HYDRANT_STEPS.get_step(@active_step).send(action, build_context)
+    context_to_instance_variables context
+    context
+  end
+
   protected
 
-  def get_redirect_path(target, model_object)
+  def context_to_instance_variables context
+    #copy everything out of context and into instance variables
+    context.each {|k,v| self.instance_variable_set("@#{k}", v)}
+  end 
+
+  def get_redirect_path(target, obj)
     unless HYDRANT_STEPS.last?(params[:step]) && @active_step == "published"
-      redirect_path = edit_polymorphic_path(model_object, step: target)
+      redirect_path = edit_polymorphic_path(obj, step: target)
     else
       flash[:notice] = "This resource is now available for use in the system"
-      redirect_path = polymorphic_path(model_object)
+      redirect_path = polymorphic_path(obj)
     end
 
     redirect_path
   end
 
-  def report_errors(model_object)
+  def report_errors
     flash[:error] = "There are errors with your submission. Please correct them before continuing."
     #XXX is this next line supposed to be HYDRANT_STEPS.first.step or active_step or what?!?
     step = params[:step] || HYDRANT_STEPS.first.template
