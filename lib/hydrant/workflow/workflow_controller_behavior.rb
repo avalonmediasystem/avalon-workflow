@@ -38,7 +38,7 @@ module Hydrant::Workflow::WorkflowControllerBehavior
     unless model_object.errors.empty?
       report_errors model_object
     else
-      if params[:save_and_continue] == ""
+      unless params[:save_and_continue].nil?
         model_object.workflow.update_status(@active_step)
         model_object.save(validate: false)
 
