@@ -36,7 +36,7 @@ module Hydrant::Workflow::WorkflowControllerBehavior
     custom_update #yield to custom_update in the controller
 
     unless model_object.errors.empty?
-      report_errors model_object
+      report_errors
     else
       unless params[:save_and_continue].nil?
         model_object.workflow.update_status(@active_step)
