@@ -12,5 +12,5 @@ Gem::Specification.new do |gem|
 	gem.test_files = gem.files.grep(%r{^(test|spec|features)/})
 	gem.name = 'avalon-workflow'
 	gem.require_paths = ["lib", "app"]
-	gem.version = AvalonWorkflow::VERSION
+	gem.version = Avalon::Workflow::VERSION
 end
