@@ -7,7 +7,7 @@
 # Workflow state is designed to be chained so that multiple operations can be
 # performed in sequence. Make sure that your own steps return the modified
 # application context for use by methods down the line
-module Hydrant::Workflow
+module Avalon::Workflow
       class BasicStep
          attr_accessor :step, :title, :summary, :template
   

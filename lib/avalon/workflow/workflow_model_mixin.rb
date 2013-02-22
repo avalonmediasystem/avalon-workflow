@@ -1,6 +1,6 @@
-require 'hydrant/workflow/workflow_datastream'
+require 'avalon/workflow/workflow_datastream'
 
-module Hydrant::Workflow
+module Avalon::Workflow
   module WorkflowModelMixin
     def self.included(klazz)
       klazz.has_metadata name: 'workflow', type: WorkflowDatastream

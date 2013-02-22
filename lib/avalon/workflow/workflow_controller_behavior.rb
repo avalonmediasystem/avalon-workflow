@@ -1,4 +1,4 @@
-module Hydrant::Workflow::WorkflowControllerBehavior
+module Avalon::Workflow::WorkflowControllerBehavior
   extend ActiveSupport::Concern
 
   included do

@@ -1,7 +1,7 @@
 # This requires Ruby 1.9.x to function properly. The behaviour of the Hash class in
 # prior versions does not guarantee that the ordering will work properly. This should
 # be documented after the quick and dirty solution is in place.
-module Hydrant::Workflow
+module Avalon::Workflow
     class Workflow
       @_states = []
       @_states_order = []
