@@ -33,27 +33,36 @@ module Avalon::Workflow::WorkflowControllerBehavior
   def update
     context = perform_step_action :execute
 
-    custom_update #yield to custom_update in the controller
+    # yield to custom_update in the controller
+    custom_update
 
-    unless model_object.errors.empty?
-      report_errors
-    else
-      unless params[:save_and_continue].nil?
-        model_object.workflow.update_status(@active_step)
-        model_object.save(validate: false)
+    # move to the next step if object is valid
+    if model_object.valid? && params[:save_and_continue].present?
+      model_object.workflow.update_status(@active_step)
 
-	# Advance to the next step
-        if HYDRANT_STEPS.has_next?(@active_step)
-          @active_step = HYDRANT_STEPS.next(@active_step).step
-        elsif model_object.workflow.published?
-          @active_step = "published"
-        end
-      end
-      respond_to do |format|
-        format.html { (model_object.workflow.published? and model_object.workflow.current?(@active_step)) ? redirect_to(polymorphic_path(model_object)) : redirect_to(get_redirect_path(@active_step, model_object)) }
-        format.json { render :json => nil }
+      if HYDRANT_STEPS.has_next?(@active_step)
+        @active_step = HYDRANT_STEPS.next(@active_step).step
+      elsif model_object.workflow.published?
+        @active_step = 'published'
       end
     end
+
+    # if object has updated attributes and or the step has changed
+    model_object.save(validate: false)
+
+    respond_to do |format|
+      format.html do 
+        if ! model_object.valid?
+          flash[:error] = 'There are errors with your submission. Please correct them before continuing.'
+          render :edit
+        elsif model_object.workflow.published? && model_object.workflow.current?(@active_step)
+          redirect_to(polymorphic_path(model_object))
+        else
+          redirect_to(get_redirect_path(@active_step, model_object))
+        end
+      end
+    end
+
   end
 
   def custom_update
@@ -93,13 +102,6 @@ module Avalon::Workflow::WorkflowControllerBehavior
     end
 
     redirect_path
-  end
-
-  def report_errors
-    flash[:error] = "There are errors with your submission. Please correct them before continuing."
-    #XXX is this next line supposed to be HYDRANT_STEPS.first.step or active_step or what?!?
-    step = params[:step] || HYDRANT_STEPS.first.template
-    render :edit and return
   end
 
 end
