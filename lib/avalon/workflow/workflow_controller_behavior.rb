@@ -37,7 +37,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
     custom_update
 
     # move to the next step if object is valid
-    if model_object.valid? && params[:save_and_continue].present?
+    if model_object.errors.empty? && params[:save_and_continue].present?
       model_object.workflow.update_status(@active_step)
 
       if HYDRANT_STEPS.has_next?(@active_step)
@@ -52,7 +52,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
 
     respond_to do |format|
       format.html do 
-        if ! model_object.valid?
+        if model_object.errors.present?
           flash[:error] = 'There are errors with your submission. Please correct them before continuing.'
           render :edit
         elsif model_object.workflow.published? && model_object.workflow.current?(@active_step)
