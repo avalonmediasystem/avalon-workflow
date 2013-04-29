@@ -1,6 +1,7 @@
 require File.expand_path('../lib/avalon-workflow/version', __FILE__)
 
 Gem::Specification.new do |gem|
+	gem.license = "Apache 2.0"
 	gem.authors = ["rogersna"]
 	gem.email = ["rogersna@indiana.edu"]
 	gem.description = %q{Workflow processing for Avalon based applications}
