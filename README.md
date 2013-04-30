@@ -1,4 +1,3 @@
 avalon-workflow
 ================
-
-Refactoring workflow steps into a flexible framework
+Flexible framework for managing the ingest workflow of resources within Avalon Media System
