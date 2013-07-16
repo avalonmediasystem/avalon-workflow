@@ -156,10 +156,12 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
     else
       'In progress'
     end
-    solr_doc.merge!(workflow_status_facet: solr_value)
+    # Compatible with both Solrizer 2.x and 3.x
+    mapper = Solrizer.respond_to?(:default_field_mapper) ? Solrizer.default_field_mapper : Solrizer::FieldMapper::Default.new
 
+    solr_doc.merge!(mapper.solr_name('workflow_status',:facetable) => solr_value)
     published_value = published? ? 'Published' : 'Unpublished'
-    solr_doc.merge!(:workflow_published_facet => published_value)
+    solr_doc.merge!(mapper.solr_name('workflow_published',:facetable) => published_value)
   end
 
       protected
