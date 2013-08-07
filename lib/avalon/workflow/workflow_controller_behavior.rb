@@ -67,13 +67,15 @@ module Avalon::Workflow::WorkflowControllerBehavior
 
     respond_to do |format|
       format.html do 
+        flash[:error]  = context[:error]
+        flash[:notice] = context[:notice]
         if model_object.errors.present?
           flash[:error] = 'There are errors with your submission. Please correct them before continuing.'
           render :edit
         elsif model_object.workflow.published? && model_object.workflow.current?(@active_step)
-          redirect_to(polymorphic_path(model_object))
+          redirect_to(polymorphic_path(model_object), flash: flash)
         else
-          redirect_to(get_redirect_path(@active_step, model_object))
+          redirect_to(get_redirect_path(@active_step, model_object), flash: flash)
         end
       end
     end

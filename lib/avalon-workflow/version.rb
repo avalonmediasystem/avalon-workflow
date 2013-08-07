@@ -15,6 +15,6 @@
 
 module Avalon
 	module Workflow
-		VERSION = "0.0.2a"
+		VERSION = "0.0.3"
 	end
 end
