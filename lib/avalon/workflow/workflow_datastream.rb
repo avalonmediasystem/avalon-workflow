@@ -13,7 +13,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class WorkflowDatastream < ActiveFedora::NokogiriDatastream
+class WorkflowDatastream < ActiveFedora::OmDatastream
   before_save :reset_values
 
   set_terminology do |t|
