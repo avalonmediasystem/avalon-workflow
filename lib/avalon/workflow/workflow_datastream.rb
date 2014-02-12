@@ -76,14 +76,11 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
       def current?(step_name)
         current = case
                   when HYDRANT_STEPS.first?(step_name)
-			  logger.debug "<< Option 1 >>"
                     last_completed_step.first.empty?
                   when HYDRANT_STEPS.exists?(step_name)
-			  logger.debug "<< Option 2 >>"
                     previous_step = HYDRANT_STEPS.previous(step_name)
                     (last_completed_step.first == previous_step.step)
                   else
-			  logger.debug "<< Option 3 >>"
                     false
                   end
 
@@ -102,6 +99,7 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
 	lcs = (last_completed_step.is_a? Array) ? last_completed_step.first : last_completed_step
 
 	if (lcs.blank? or not HYDRANT_STEPS.exists?(lcs))
+	  logger.warn "<< Step #{lcs} invalid, defaulting to first step >>"
 	  self.last_completed_step = HYDRANT_STEPS.first.step
 	elsif (not HYDRANT_STEPS.last?(lcs))
 	  next_step = HYDRANT_STEPS.next(lcs).step
@@ -116,14 +114,11 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
       end
       
   def update_status(active_step=nil)
-    logger.debug "<< UPDATE_INGEST_STATUS >>"
-
+      logger.debug "<< UPDATE_INGEST_STATUS >>"
       active_step = active_step || last_completed_step.first
       logger.debug "<< COMPLETED : #{completed?(active_step)} >>"
 
       if current?(active_step) and not published?
-        logger.debug "<< ADVANCING to the next step in the workflow >>"
-        logger.debug "<< #{active_step} >>"
         advance
       end
 

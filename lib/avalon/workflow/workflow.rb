@@ -102,10 +102,6 @@ module Avalon::Workflow
       end
       
       def template(step)
-        logger.debug "<< TEMPLATE >>"
-        logger.debug "<< @_states[#{step}] >>"
-        logger.debug "<< #{@_states[step]} >>"
-        
         target_step = @_states[step]
         target_step.template
       end
