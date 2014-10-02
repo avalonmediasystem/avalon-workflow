@@ -114,7 +114,6 @@ module Avalon::Workflow::WorkflowControllerBehavior
     unless HYDRANT_STEPS.last?(params[:step]) && @active_step == "published"
       redirect_path = edit_polymorphic_path(obj, step: target)
     else
-      flash[:notice] = "This resource is now available for use in the system"
       redirect_path = polymorphic_path(obj)
     end
 
