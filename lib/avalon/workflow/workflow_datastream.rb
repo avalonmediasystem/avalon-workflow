@@ -140,6 +140,10 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
     builder.doc
   end
 
+  def prefix
+    ""
+  end
+
   def to_solr(solr_doc=SolrDocument.new)
     super(solr_doc)
 
