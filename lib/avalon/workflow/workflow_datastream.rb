@@ -140,11 +140,11 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
     builder.doc
   end
 
-  def prefix
+  def prefix(path)
     ""
   end
 
-  def to_solr(solr_doc=SolrDocument.new)
+  def to_solr(solr_doc=Hash.new, opts = {})
     super(solr_doc)
 
     solr_value = case last_completed_step.first
