@@ -75,7 +75,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
         elsif model_object.workflow.published? && model_object.workflow.current?(@active_step)
           redirect_to(polymorphic_path(model_object), flash: flash)
         else
-          redirect_to(get_redirect_path(@active_step, model_object), flash: flash)
+          redirect_to(get_redirect_path(@active_step, model_object), flash: flash.to_h)
         end
       end
     end
