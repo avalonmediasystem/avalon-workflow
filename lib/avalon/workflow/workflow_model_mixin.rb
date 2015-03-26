@@ -18,7 +18,7 @@ require 'avalon/workflow/workflow_datastream'
 module Avalon::Workflow
   module WorkflowModelMixin
     def self.included(klazz)
-      klazz.has_metadata name: 'workflow', type: WorkflowDatastream
+      klazz.contains 'workflow', class_name: 'WorkflowDatastream'
     end
   end
 end
