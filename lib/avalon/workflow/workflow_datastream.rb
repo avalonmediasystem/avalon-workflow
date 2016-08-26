@@ -35,7 +35,7 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
   def last_completed_step= active_step
     active_step = active_step.first if active_step.is_a? Array
     unless HYDRANT_STEPS.exists? active_step
-      logger.warn "Unrecognized step : #{active_step}"
+      Rails.logger.warn "Unrecognized step : #{active_step}"
     end
     
     # Set it anyways for now. Need to come up with a more robust warning
@@ -45,7 +45,7 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
   
   def origin= source
     unless ['batch', 'web', 'console'].include? source
-      logger.warn "Unrecognized origin : #{source}"
+      Rails.logger.warn "Unrecognized origin : #{source}"
       update_values({[{:origin=>"0"}]=>{"0"=>"unknown"}})
     else
       update_values({[{:origin=>"0"}]=>{"0"=>source}})
@@ -99,11 +99,11 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
 	lcs = (last_completed_step.is_a? Array) ? last_completed_step.first : last_completed_step
 
 	if (lcs.blank? or not HYDRANT_STEPS.exists?(lcs))
-	  logger.warn "<< Step #{lcs} invalid, defaulting to first step >>"
+	  Rails.logger.warn "<< Step #{lcs} invalid, defaulting to first step >>"
 	  self.last_completed_step = HYDRANT_STEPS.first.step
 	elsif (not HYDRANT_STEPS.last?(lcs))
 	  next_step = HYDRANT_STEPS.next(lcs).step
-	  logger.debug "<< Advancing to the next step - #{next_step} >>"
+	  Rails.logger.debug "<< Advancing to the next step - #{next_step} >>"
           self.last_completed_step = next_step 
         end
       end
@@ -114,9 +114,9 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
       end
       
   def update_status(active_step=nil)
-      logger.debug "<< UPDATE_INGEST_STATUS >>"
+      Rails.logger.debug "<< UPDATE_INGEST_STATUS >>"
       active_step = active_step || last_completed_step.first
-      logger.debug "<< COMPLETED : #{completed?(active_step)} >>"
+      Rails.logger.debug "<< COMPLETED : #{completed?(active_step)} >>"
 
       if current?(active_step) and not published?
         advance
@@ -125,7 +125,7 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
       if HYDRANT_STEPS.last? active_step and completed? active_step
         publish
       end
-      logger.debug "<< PUBLISHED : #{published?} >>"
+      Rails.logger.debug "<< PUBLISHED : #{published?} >>"
   end
 
   def self.xml_template
@@ -161,16 +161,16 @@ class WorkflowDatastream < ActiveFedora::OmDatastream
 
       protected
       def reset_values
-        logger.debug "<< BEFORE_SAVE (IngestStatus) >>"
-        logger.debug "<< last_completed_step => #{last_completed_step} >>"
+        Rails.logger.debug "<< BEFORE_SAVE (IngestStatus) >>"
+        Rails.logger.debug "<< last_completed_step => #{last_completed_step} >>"
         
         if published.nil?
-          logger.debug "<< Default published flag = false >>"
+          Rails.logger.debug "<< Default published flag = false >>"
           published = false
         end
         
         if last_completed_step.nil?
-          logger.debug "<< Default step = #{HYDRANT_STEPS.first.step} >>"
+          Rails.logger.debug "<< Default step = #{HYDRANT_STEPS.first.step} >>"
           last_completed_step = HYDRANT_STEPS.first.step
         end
       end
