@@ -18,7 +18,9 @@ require 'avalon/workflow/workflow_datastream'
 module Avalon::Workflow
   module WorkflowModelMixin
     def self.included(klazz)
-      klazz.has_subresource 'workflow', class_name: 'WorkflowDatastream'
+      klazz.has_subresource 'workflow', class_name: 'WorkflowDatastream' do |f|
+        f.original_name = "workflow.xml"
+      end
     end
   end
 end
