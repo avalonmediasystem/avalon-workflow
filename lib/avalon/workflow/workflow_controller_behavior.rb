@@ -52,6 +52,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
     custom_update
 
     # move to the next step if object is valid
+    model_object.valid?
     if model_object.errors.empty? && params[:save_and_continue].present?
       model_object.workflow.update_status(@active_step)
 
@@ -63,7 +64,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
     end
 
     # if object has updated attributes and or the step has changed
-    model_object.save(validate: false)
+    model_object.save
 
     respond_to do |format|
       format.html do 
