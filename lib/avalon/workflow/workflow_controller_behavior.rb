@@ -2,14 +2,14 @@
 # Copyright 2011-2013, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -17,7 +17,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
   extend ActiveSupport::Concern
 
   included do
-    before_filter :update_active_step, only: [:edit, :update]
+    before_action :update_active_step, only: [:edit, :update]
   end
 
   def update_active_step
@@ -66,7 +66,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
     model_object.save(validate: false)
 
     respond_to do |format|
-      format.html do 
+      format.html do
         flashes = { error: context[:error], notice: context[:notice]}
         if model_object.errors.present?
           flash[:error] = 'There are errors with your submission. Please correct them before continuing.'
@@ -107,7 +107,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
   def context_to_instance_variables context
     #copy everything out of context and into instance variables
     context.each {|k,v| self.instance_variable_set("@#{k}", v)}
-  end 
+  end
 
   def get_redirect_path(target, obj)
     unless HYDRANT_STEPS.last?(params[:step]) && @active_step == "published"
