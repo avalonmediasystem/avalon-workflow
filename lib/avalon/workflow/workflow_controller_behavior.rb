@@ -51,20 +51,19 @@ module Avalon::Workflow::WorkflowControllerBehavior
     # yield to custom_update in the controller
     custom_update
 
-    # move to the next step if object is valid
-    model_object.valid?
-    if model_object.errors.empty? && params[:save_and_continue].present?
-      model_object.workflow.update_status(@active_step)
-
-      if HYDRANT_STEPS.has_next?(@active_step)
-        @active_step = HYDRANT_STEPS.next(@active_step).step
-      elsif model_object.workflow.published?
-        @active_step = 'published'
-      end
-    end
 
     # if object has updated attributes and or the step has changed
-    model_object.save
+    if model_object.save
+      if params[:save_and_continue].present?
+        model_object.workflow.update_status(@active_step)        
+        if HYDRANT_STEPS.has_next?(@active_step)
+          @active_step = HYDRANT_STEPS.next(@active_step).step
+        elsif model_object.workflow.published?
+          @active_step = 'published'
+        end
+        model_object.save
+      end
+    end
 
     respond_to do |format|
       format.html do 
