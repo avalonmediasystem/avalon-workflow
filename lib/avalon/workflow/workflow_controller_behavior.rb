@@ -61,7 +61,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
         elsif model_object.workflow.published?
           @active_step = 'published'
         end
-        model_object.save
+        model_object.workflow.save!
       end
     end
 
