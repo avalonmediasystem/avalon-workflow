@@ -69,7 +69,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
       format.html do 
         flashes = { error: context[:error], notice: context[:notice]}
         if model_object.errors.present?
-          flash[:error] = 'There are errors with your submission. Please correct them before continuing.'
+          flash.now[:error] = 'There are errors with your submission. Please correct them before continuing.'
           render :edit
         elsif model_object.workflow.published? && model_object.workflow.current?(@active_step)
           redirect_to(polymorphic_path(model_object), flash: flashes)
