@@ -17,7 +17,7 @@ module Avalon::Workflow::WorkflowControllerBehavior
   extend ActiveSupport::Concern
 
   included do
-    before_filter :update_active_step, only: [:edit, :update]
+    before_action :update_active_step, only: [:edit, :update]
   end
 
   def update_active_step
