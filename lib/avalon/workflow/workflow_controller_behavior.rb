@@ -72,7 +72,8 @@ module Avalon::Workflow::WorkflowControllerBehavior
           flash.now[:error] = 'There are errors with your submission. Please correct them before continuing.'
 
           # Refresh the context before rendering edit
-          context = perform_step_action :before_step
+          context = HYDRANT_STEPS.get_step(@active_step).send(:before_step, context)
+          context_to_instance_variables context
           custom_edit #yield to custom_edit in the controller
 
           render :edit
