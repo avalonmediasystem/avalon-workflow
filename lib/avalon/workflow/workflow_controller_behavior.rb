@@ -70,6 +70,12 @@ module Avalon::Workflow::WorkflowControllerBehavior
         flashes = { error: context[:error], notice: context[:notice]}
         if model_object.errors.present?
           flash.now[:error] = 'There are errors with your submission. Please correct them before continuing.'
+
+          # Refresh the context before rendering edit
+          context = HYDRANT_STEPS.get_step(@active_step).send(:before_step, context)
+          context_to_instance_variables context
+          custom_edit #yield to custom_edit in the controller
+
           render :edit
         elsif model_object.workflow.published? && model_object.workflow.current?(@active_step)
           redirect_to(polymorphic_path(model_object), flash: flashes)
